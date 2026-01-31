@@ -1,0 +1,713 @@
+%
+% 000-sesion2.tex
+% Presentation Session 2: Tools II - Debugging
+%
+% Compile to .pdf with LaTeX (pdflatex)
+% Requires Beamer package (latex-beamer)
+%
+
+\documentclass[xcolor=table]{beamer}
+\usetheme{Warsaw}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{headline}{}
+\useoutertheme{infolines}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphics}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{hyperref}
+
+\definecolor{shadecolor}{RGB}{180,180,180}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Python Highlighting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{10}
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{10}
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey1}{rgb}{0.5,0.5,0.5}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm\small,
+morekeywords={self},
+keywordstyle=\ttb\color{deepblue},
+emphstyle=\ttb\color{deepred},
+stringstyle=\color{deepgreen},
+commentstyle=\small\color{grey1}\ttm,
+frame=single,
+showstringspaces=false
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+\newcommand{\asignatura}{Session 2: Tools II - Debugging}
+\newcommand{\grado}{Programming in Network Environments}
+\newcommand{\curso}{2025-2026}
+
+\title[\asignatura]{\asignatura}
+\subtitle{\grado}
+\author{URJC}
+\institute{Universidad Rey Juan Carlos}
+\date{Course \curso}
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\begin{center}
+{\Huge \insertsection}
+\end{center}
+\end{frame}
+}
+
+\begin{document}
+
+\frame{
+\maketitle
+}
+
+\begin{frame}
+\frametitle{Contents}
+\tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 1: Session 1 Review
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Review: Session 1 - Tools I}
+
+\begin{frame}
+\frametitle{What We Learned in Session 1}
+
+\textbf{Session 1: Tools I covered}:
+
+\begin{itemize}
+\item \textbf{PyCharm IDE}
+  \begin{itemize}
+  \item Installation and configuration
+  \item Creating and running programs
+  \item Project management
+  \end{itemize}
+\vspace{0.2cm}
+\item \textbf{GitHub and Git}
+  \begin{itemize}
+  \item Creating repositories
+  \item Push and pull operations
+  \item Version control workflow
+  \end{itemize}
+\vspace{0.2cm}
+\item \textbf{First programs}
+  \begin{itemize}
+  \item hello.py - Hello World
+  \item count.py - Print numbers 1 to 20
+  \item sum20.py - Sum first 20 integers
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2: Introduction to Debugging
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction to Debugging}
+
+\begin{frame}
+\frametitle{Session 2 Goals}
+
+\textbf{In this session we will learn}:
+
+\begin{itemize}
+\item How to execute programs \textbf{step by step}
+\item Understanding \textbf{breakpoints}
+\item Difference between:
+  \begin{itemize}
+  \item \textbf{Step Over}
+  \item \textbf{Step Into}
+  \item \textbf{Step Out}
+  \end{itemize}
+\item Practice debugging with exercises
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Time}: 2 hours
+
+\end{frame}
+
+\begin{frame}
+\frametitle{What is Debugging?}
+
+\begin{block}{Bugs and Debugging}
+When our programs don't work or generate strange errors, we say they have \textbf{bugs}. The process of finding these errors is called \textbf{debugging}.
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{Why is debugging important?}
+\begin{itemize}
+\item Writing programs is not difficult
+\item Making them work as we want is more complex
+\item We need tools to understand what's happening
+\item Step by step execution helps us find errors
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{PyCharm's integrated debugger} lets us:
+\begin{itemize}
+\item Execute programs line by line
+\item Examine variable values
+\item Understand program flow
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 3: Step by Step Execution
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Step by Step Execution}
+
+\begin{frame}
+\frametitle{Hello World Step by Step}
+
+\textbf{Program}: hello.py (from Session 1)
+
+\vspace{0.3cm}
+
+\textbf{Process}:
+\begin{enumerate}
+\item Open hello.py in PyCharm
+\item Set a \textbf{breakpoint} on the first line
+\item Click the \textbf{debug button} (green bug)
+\item Use \textbf{Step Over} to execute line by line
+\item Watch output in the Console tab
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Setting Breakpoints}
+
+\begin{block}{What is a Breakpoint?}
+A breakpoint is a marker that tells the debugger where to pause program execution.
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{How to set a breakpoint}:
+\begin{itemize}
+\item Go to the line where you want to stop
+\item Double-click on the right side of the line number
+\item A red circle appears
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{What happens}:
+\begin{itemize}
+\item Program executes until it reaches the breakpoint
+\item Execution pauses
+\item We can examine the current state
+\item The line with the breakpoint is highlighted
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Debug Mode}
+
+\textbf{Starting debug mode}:
+\begin{itemize}
+\item Set breakpoints
+\item Click the green \textbf{bug button} (next to run button)
+\item Program starts and pauses at first breakpoint
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Debug panel opens}:
+\begin{itemize}
+\item \textbf{Debugger tab}: Shows execution controls
+\item \textbf{Console tab}: Shows program output
+\item \textbf{Variables panel}: Shows current variable values
+\item Green dot on bug icon: indicates debug mode active
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step Over}
+
+\begin{block}{What is Step Over?}
+\textbf{Step Over} executes the current line and moves to the next line in the same scope.
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{How to use}:
+\begin{itemize}
+\item Press the \textbf{Step Over} button
+\item Or press \textbf{F8} key
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{What happens}:
+\begin{itemize}
+\item Current instruction executes
+\item Next instruction is highlighted
+\item If it's a function call, the function executes completely
+\item Execution stops at the next line
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example: count.py}
+
+\textbf{Program}: Print numbers from 1 to 20
+
+\begin{python}
+# Session 1. Exercise 2
+
+for i in range(1, 21):
+    print(i, end=' ')
+\end{python}
+
+\vspace{0.3cm}
+
+\textbf{Debugging steps}:
+\begin{enumerate}
+\item Set breakpoint on line 4 (print statement)
+\item Click debug button
+\item Observe variable \pythoninline{i} in Variables panel
+\item Use \textbf{Step Over} to execute print
+\item Use \textbf{Resume} (F9) to jump to next breakpoint
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Example: sum20.py}
+
+\textbf{Program}: Add the 20 first integer numbers
+
+\begin{python}
+# Session 1. Exercise 3
+res = 0
+
+for i in range(1, 21):
+    res += i
+
+print("Total sum: ", res)
+\end{python}
+
+\vspace{0.3cm}
+
+\textbf{Debugging steps}:
+\begin{enumerate}
+\item Set breakpoint on line 5 (\pythoninline{res += i})
+\item Watch how \pythoninline{res} and \pythoninline{i} change
+\item Use Resume to see incremental changes
+\item Final result: \pythoninline{res = 210}
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Resume Button}
+
+\begin{block}{What is Resume?}
+\textbf{Resume} continues execution until the next breakpoint or program end.
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{How to use}:
+\begin{itemize}
+\item Press the \textbf{Resume} button (green play icon)
+\item Or press \textbf{F9} key
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Useful when}:
+\begin{itemize}
+\item You're in a loop and want to skip iterations
+\item You want to reach the next breakpoint quickly
+\item You've examined enough and want to continue
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 4: Stepping Into Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Stepping Into Functions}
+
+\begin{frame}[fragile]
+\frametitle{Example: sumN.py}
+
+\textbf{Program}: Calculate sum of N first integers using a function
+
+\begin{python}
+def sumn(n):
+    res = 0
+    for i in range(1, n+1):
+        res += i
+    return res
+
+# Main program
+print("Sum of 20 first integers: ", sumn(20))
+print("Sum of 100 first integers: ", sumn(100))
+\end{python}
+
+\vspace{0.2cm}
+
+\textbf{New folder}: Store in S02/ directory
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step Over vs Step Into}
+
+\textbf{Step Over} (F8):
+\begin{itemize}
+\item Executes the entire function
+\item Returns result without entering function
+\item Stops at next line in current scope
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Step Into} (F7):
+\begin{itemize}
+\item Enters inside the function
+\item Stops at first line of function
+\item Allows debugging function internals
+\item Can see function's local variables
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{When to use Step Into}:
+\begin{itemize}
+\item When you need to debug what happens inside a function
+\item To understand function's internal logic
+\item To check function variable values
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Step Out}
+
+\begin{block}{What is Step Out?}
+\textbf{Step Out} completes execution of current function and returns to the caller.
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{How to use}:
+\begin{itemize}
+\item Press the \textbf{Step Out} button
+\item Or press \textbf{Shift+F8}
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{What happens}:
+\begin{itemize}
+\item Function completes execution
+\item Returns to the line that called the function
+\item Stops at the next instruction after function call
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Useful when}:
+\begin{itemize}
+\item You've seen enough inside the function
+\item You want to return to upper level
+\item You accidentally stepped into a function
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Variable Scopes}
+
+\textbf{When stepping into/out of functions}:
+
+\vspace{0.3cm}
+
+\textbf{Inside function scope}:
+\begin{itemize}
+\item See function's local variables (n, res, i)
+\item See function parameters
+\item Cannot see main program variables
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Outside function scope} (main program):
+\begin{itemize}
+\item Local function variables disappear
+\item Only see main program variables
+\item Variables exist only in their scope
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Example}: In sumN.py
+\begin{itemize}
+\item Inside sumn(): see n=20, res, i
+\item Outside sumn(): those variables don't exist
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 5: Exercises
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Exercises}
+
+\begin{frame}
+\frametitle{Practice is Key!}
+
+\begin{block}{Learning by Doing}
+The only way to learn debugging is by debugging programs!
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{Before starting}:
+\begin{itemize}
+\item Make sure Session 1 exercises are uploaded to GitLab
+\item Create S02/ folder for Session 2 exercises
+\item Practice step by step execution
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Three exercises}:
+\begin{enumerate}
+\item Fibonacci sequence (basic)
+\item Fibonacci function (with Step Into)
+\item Fibonacci sum (nested functions)
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise 1: Fibonacci Sequence}
+
+\textbf{Filename}: S02/fibonacci.py
+
+\vspace{0.3cm}
+
+\textbf{Description}:
+\begin{itemize}
+\item Write a program (without functions)
+\item Print first 11 terms of Fibonacci series
+\item Start from 0
+\item Execute step by step
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Expected output}:
+\begin{verbatim}
+0 1 1 2 3 5 8 13 21 34 55
+\end{verbatim}
+
+\vspace{0.3cm}
+
+\textbf{Fibonacci reminder}:
+\begin{itemize}
+\item F(0) = 0, F(1) = 1
+\item F(n) = F(n-1) + F(n-2)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise 2: Fibonacci Function}
+
+\textbf{Filename}: S02/fiboN.py
+
+\vspace{0.3cm}
+
+\textbf{Description}:
+\begin{itemize}
+\item Convert previous program into function \pythoninline{fibon(n)}
+\item Function returns nth Fibonacci term
+\item Main program calls fibon() for 5th, 10th, 15th terms
+\item Execute step by step
+\item Use \textbf{Step Into} to watch function internals
+\item Try \textbf{Step Out} button
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Expected output}:
+\begin{verbatim}
+5th term: 3
+10th term: 34
+15th term: 377
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise 3: Fibonacci Sum}
+
+\textbf{Filename}: S02/fibo-sumN.py
+
+\vspace{0.3cm}
+
+\textbf{Description}:
+\begin{itemize}
+\item Write function \pythoninline{fibosum(n)}
+\item Calculates addition of first n Fibonacci terms
+\item Main program calls with n=5 and n=10
+\item Execute step by step
+\item Use \textbf{Step Into} and \textbf{Step Out}
+\item Notice: 2 function levels (fibosum calls fibon)
+\item Use Step Into \textbf{twice} to enter fibon()
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Expected output}:
+\begin{verbatim}
+Sum of first 5 terms: 7
+Sum of first 10 terms: 88
+\end{verbatim}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 6: Summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Summary}
+
+\begin{frame}
+\frametitle{Debugging Commands Summary}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Command} & \textbf{Key} & \textbf{Action} \\
+\hline
+Step Over & F8 & Execute current line \\
+ & & Stay in same scope \\
+\hline
+Step Into & F7 & Enter function \\
+ & & Debug function internals \\
+\hline
+Step Out & Shift+F8 & Complete function \\
+ & & Return to caller \\
+\hline
+Resume & F9 & Continue to next \\
+ & & breakpoint \\
+\hline
+\end{tabular}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Session Checklist}
+
+\textbf{Make sure you have}:
+
+\begin{itemize}
+\item All Session 1 items checked
+\item Session-01 folder with:
+  \begin{itemize}
+  \item count.py
+  \item sum20.py
+  \end{itemize}
+\item Session-02 folder with:
+  \begin{itemize}
+  \item sumN.py
+  \item fibonacci.py (Exercise 1)
+  \item fiboN.py (Exercise 2)
+  \item fibo-sumN.py (Exercise 3)
+  \end{itemize}
+\item Everything uploaded to GitLab
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Key Takeaways}
+
+\textbf{What we learned}:
+
+\begin{itemize}
+\item Setting and using \textbf{breakpoints}
+\item \textbf{Step Over}: Execute line in current scope
+\item \textbf{Step Into}: Enter function to debug internals
+\item \textbf{Step Out}: Return to caller
+\item \textbf{Resume}: Continue to next breakpoint
+\item Understanding \textbf{variable scopes}
+\item Debugging is essential for finding bugs
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Practice debugging regularly!}
+
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\Huge{Questions?}
+
+\vspace{1cm}
+
+\Large{Happy Debugging!}
+\end{center}
+\end{frame}
+
+\end{document}
