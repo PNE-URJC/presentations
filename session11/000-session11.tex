@@ -1,0 +1,390 @@
+%
+% 000-session11.tex
+% Presentation Session 11: Practice 3 - Seq Server
+%
+% Compile to .pdf with LaTeX (pdflatex)
+% Requires Beamer package (latex-beamer)
+%
+
+\documentclass[xcolor=table]{beamer}
+\usetheme{Warsaw}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{headline}{}
+\setbeamerfont{title}{size=\large}
+\useoutertheme{infolines}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphics}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{hyperref}
+
+\definecolor{shadecolor}{RGB}{180,180,180}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Python Highlighting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{10}
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{10}
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey1}{rgb}{0.5,0.5,0.5}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm\small,
+morekeywords={self},
+keywordstyle=\ttb\color{deepblue},
+emphstyle=\ttb\color{deepred},
+stringstyle=\color{deepgreen},
+commentstyle=\small\color{grey1}\ttm,
+frame=single,
+showstringspaces=false
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+\newcommand{\asignatura}{Session 11: Practice 3 -- Seq Server}
+\newcommand{\grado}{Programming in Network Environments}
+\newcommand{\curso}{2025-2026}
+
+\title[\asignatura]{\asignatura}
+\subtitle{\grado}
+\author{URJC}
+\institute{GSyC}
+\date{Course \curso}
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\begin{center}
+{\LARGE \insertsection}
+\end{center}
+\end{frame}
+}
+
+\begin{document}
+
+\frame{
+\maketitle
+}
+
+\begin{frame}
+\frametitle{Contents}
+\tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 1: Session 10 Review
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Review: Session 10 -- Client-Server}
+
+\begin{frame}
+\frametitle{What We Learned in Session 10 (1/2)}
+
+\textbf{Session 10: Introduction to Server Programming}:
+
+\begin{itemize}
+\item \textbf{Servers} use \textbf{two sockets}:
+  \begin{itemize}
+  \item A \textbf{listening socket} (ls) -- waits for incoming connections
+  \item A \textbf{communication socket} (cs) -- created per client
+  \end{itemize}
+\vspace{0.15cm}
+\item \textbf{Server setup steps}:
+  \begin{enumerate}
+  \item \texttt{socket()} -- Create the socket
+  \item \texttt{bind(IP, PORT)} -- Assign address
+  \item \texttt{listen()} -- Start listening
+  \item \texttt{accept()} -- Wait for a client (blocks)
+  \item \texttt{recv()} / \texttt{send()} -- Communicate
+  \item \texttt{close()} -- Close client socket, loop back
+  \end{enumerate}
+\vspace{0.15cm}
+\item \textbf{Address reuse}: \pythoninline{ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{What We Learned in Session 10 (2/2)}
+
+\textbf{Happy Server} -- always responds with the same message:
+
+\vspace{0.1cm}
+
+\begin{python}
+import socket
+
+ls = socket.socket(socket.AF_INET,
+                   socket.SOCK_STREAM)
+ls.setsockopt(socket.SOL_SOCKET,
+              socket.SO_REUSEADDR, 1)
+ls.bind(("127.0.0.1", 8080))
+ls.listen()
+
+while True:
+    (cs, client_ip_port) = ls.accept()
+    msg = cs.recv(2048).decode()
+    response = "HELLO. I am the Happy Server\n"
+    cs.send(response.encode())
+    cs.close()
+\end{python}
+
+\vspace{0.1cm}
+
+\textbf{Exercises}: Echo server (1--3) + test client (4)
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2: Session 11 Overview
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Session 11: Practice 3 -- Seq Server}
+
+\begin{frame}
+\frametitle{Session 11 Goals}
+
+\textbf{In this session we will}:
+
+\begin{itemize}
+\item Develop our own \textbf{Seq Server} to work with \textbf{DNA sequences}
+\item Define a \textbf{communication protocol} with specific commands
+\item Reuse \textbf{Seq Class} from Practice 1 and \textbf{Client Class} from Practice 2
+\item Make DNA calculations \textbf{available over the network}
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Time}: 2 hours
+
+\vspace{0.2cm}
+
+\textbf{Files}: \texttt{P03/SeqServer.py} and \texttt{P03/test-client.py}
+
+\vspace{0.2cm}
+
+\textbf{Important}: Finish all S10 exercises before starting!
+
+\end{frame}
+
+\begin{frame}
+\frametitle{The Seq Server Protocol}
+
+\begingroup\small
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Command} & \textbf{Argument} & \textbf{Response} \\
+\hline
+\texttt{PING} & (none) & ``OK'' \\
+\hline
+\texttt{GET n} & n: 0--4 & Sequence number n \\
+\hline
+\texttt{INFO seq} & A DNA sequence & Length + base counts (\%) \\
+\hline
+\texttt{COMP seq} & A DNA sequence & Complement sequence \\
+\hline
+\texttt{REV seq} & A DNA sequence & Reverse sequence \\
+\hline
+\texttt{GENE name} & Gene name & Full gene sequence \\
+\hline
+\end{tabular}
+\end{center}
+\endgroup
+
+\vspace{0.2cm}
+
+\textbf{Valid gene names} for GENE: \texttt{U5}, \texttt{ADA}, \texttt{FRAT1}, \texttt{FXN}, \texttt{RNU6\_269P}
+
+\vspace{0.2cm}
+
+\textbf{Testing}: Use \texttt{echo "PING" | nc 127.0.0.1 8080}
+
+\vspace{0.2cm}
+
+The server is built \textbf{incrementally} -- one command per exercise.
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercises 1--2: PING and GET}
+
+\textbf{Exercise 1: PING command}
+\begin{itemize}
+\item Parse the request message; if \texttt{PING} is detected, respond with \texttt{"OK!\textbackslash n"}
+\item Print \texttt{"PING command!"} on the server console
+\item Test: \texttt{echo "PING" | nc 127.0.0.1 8080}
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Exercise 2: GET command}
+\begin{itemize}
+\item \texttt{GET n} returns the sequence at index \texttt{n} (0--4)
+\item Store 5 test sequences in a \textbf{list}
+\item Parse the command and extract the number argument
+\item Test: \texttt{echo "GET 2" | nc 127.0.0.1 8080}
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Hint -- parsing the command}:
+
+\begin{python}
+cmd = msg.strip().split(" ", 1)
+command = cmd[0]  # e.g. "GET"
+if len(cmd) > 1:
+    argument = cmd[1]  # e.g. "2"
+\end{python}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercises 3--4: INFO and COMP}
+
+\textbf{Exercise 3: INFO command}
+\begin{itemize}
+\item \texttt{INFO seq} returns information about the sequence
+\item Use the \textbf{Seq Class} to compute the data
+\item Response format:
+\end{itemize}
+
+\begin{verbatim}
+  Sequence: AACCGTA
+  Total length: 7
+  A: 3 (42.9%)
+  C: 2 (28.6%)
+  G: 1 (14.3%)
+  T: 1 (14.3%)
+\end{verbatim}
+
+\vspace{0.2cm}
+
+\textbf{Exercise 4: COMP command}
+\begin{itemize}
+\item \texttt{COMP seq} returns the \textbf{complement} of the sequence
+\item Use the \textbf{Seq Class} to calculate it
+\item Test: \texttt{echo "COMP AACCGTA" | nc 127.0.0.1 8080}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercises 5--6: REV and GENE}
+
+\textbf{Exercise 5: REV command}
+\begin{itemize}
+\item \texttt{REV seq} returns the \textbf{reverse} of the sequence
+\item Use the \textbf{Seq Class} to calculate it
+\item Test: \texttt{echo "REV AACCGTA" | nc 127.0.0.1 8080}
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Exercise 6: GENE command}
+\begin{itemize}
+\item \texttt{GENE name} returns the \textbf{full sequence} of a gene
+\item Valid names: \texttt{U5}, \texttt{ADA}, \texttt{FRAT1}, \texttt{FXN}, \texttt{RNU6\_269P}
+\item Use the \textbf{Seq Class} to read the gene from its file
+\item Test: \texttt{echo "GENE U5" | nc 127.0.0.1 8080}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Exercise 7: Test Client}
+
+Write a \textbf{client program} (\texttt{P03/test-client.py}) that tests \textbf{all commands}:
+
+\begin{itemize}
+\item Use the \textbf{Client Class} from P02 and the \texttt{talk()} method
+\item For \texttt{INFO}, \texttt{COMP}, and \texttt{REV}, use the sequence from \texttt{GET 0}
+\item Print the command being tested and the server response
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{python}
+from Client0 import Client
+
+c = Client("127.0.0.1", 8080)
+print(c)
+print("* Testing PING...")
+print(c.talk("PING"))
+print("* Testing GET...")
+for i in range(5):
+    print(f"GET {i}: {c.talk(f'GET {i}')}")
+\end{python}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Deliverables and Checklist}
+
+\textbf{P03 folder should contain}:
+
+\begin{itemize}
+\item \textbf{SeqServer.py} -- The Seq Server with all 6 commands
+\item \textbf{test-client.py} -- Client that tests all commands
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Checklist}:
+\begin{itemize}
+\item[$\square$] All S10 items are completed
+\item[$\square$] SeqServer.py implements: PING, GET, INFO, COMP, REV, GENE
+\item[$\square$] test-client.py tests all commands and prints results
+\item[$\square$] Server uses the \textbf{Seq Class} from P01
+\item[$\square$] Client uses the \textbf{Client Class} from P02
+\item[$\square$] All files pushed to your remote Github repo
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Remember}: You are \textbf{building on previous work} (P01 + P02)!
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 3: End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\begin{center}
+\Huge{Questions?}
+
+\vspace{1cm}
+
+\Large{Time to code!}
+\end{center}
+\end{frame}
+
+\end{document}
