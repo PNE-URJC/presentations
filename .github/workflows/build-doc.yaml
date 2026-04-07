@@ -34,7 +34,7 @@ jobs:
 
       - name: Build documentation
         run: |
-          make
+          make test all
 
     container:
       image: ${{matrix.os}}
