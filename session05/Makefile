@@ -13,6 +13,6 @@ clean:
 clobber:
 	rm -frv *.aux *.nav *.out *.toc *.pdf *.log *.snm *.vrb *~
 test:
-	@-true
+	$(LATEXTOPDF) -draftmode 000-session5.tex
 
 .PHONY: all $(PROGRAM).pdf clean clobber test
