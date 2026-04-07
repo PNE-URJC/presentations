@@ -1,0 +1,431 @@
+%
+% 000-session15.tex
+% Presentation Session 15: Practice 5 -- BASES2 Web Server (HTTP module)
+%
+% Compile to .pdf with LaTeX (pdflatex)
+% Requires Beamer package (latex-beamer)
+%
+
+\documentclass[xcolor=table]{beamer}
+\usetheme{Warsaw}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{headline}{}
+\setbeamerfont{title}{size=\large}
+\useoutertheme{infolines}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{graphics}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+
+\definecolor{shadecolor}{RGB}{180,180,180}
+\definecolor{lightgreen}{RGB}{144,238,144}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Python Highlighting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{10}
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{10}
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+\definecolor{grey1}{rgb}{0.5,0.5,0.5}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm\small,
+morekeywords={self},
+keywordstyle=\ttb\color{deepblue},
+emphstyle=\ttb\color{deepred},
+stringstyle=\color{deepgreen},
+commentstyle=\small\color{grey1}\ttm,
+frame=single,
+showstringspaces=false
+}}
+
+% HTML style for highlighting
+\newcommand\htmlstyle{\lstset{
+language=HTML,
+basicstyle=\ttm\small,
+keywordstyle=\ttb\color{deepblue},
+stringstyle=\color{deepgreen},
+commentstyle=\small\color{grey1}\ttm,
+frame=single,
+showstringspaces=false
+}}
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% HTML environment
+\lstnewenvironment{htmlcode}[1][]
+{
+\htmlstyle
+\lstset{#1}
+}
+{}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+\newcommand{\asignatura}{Session 15: Practice 5 -- BASES2 Web Server}
+\newcommand{\grado}{Programming in Network Environments}
+\newcommand{\curso}{2025-2026}
+
+\title[\asignatura]{\asignatura}
+\subtitle{\grado}
+\author{URJC}
+\institute{GSyC}
+\date{Course \curso}
+
+\AtBeginSection[]
+{
+\begin{frame}<beamer>
+\begin{center}
+{\LARGE \insertsection}
+\end{center}
+\end{frame}
+}
+
+\begin{document}
+
+\frame{
+\maketitle
+}
+
+\begin{frame}
+\frametitle{Contents}
+\tableofcontents
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 1: Session 14 Review
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Review: Session 14 -- HTTP Python Library}
+
+\begin{frame}[fragile]
+\frametitle{What We Learned in Session 14 (1/2)}
+
+\textbf{HTTP Python module}: implement web servers without raw sockets.
+
+\begin{itemize}
+\item \textbf{Built-in web server}: \texttt{python -m http.server 8080}
+  \begin{itemize}
+  \item Serves files from the current directory automatically
+  \end{itemize}
+\vspace{0.15cm}
+\item \textbf{Web Server 1}: Using the \textbf{default handler}
+  \begin{itemize}
+  \item \pythoninline{http.server.SimpleHTTPRequestHandler}
+  \item Works like the built-in server, from Python code
+  \end{itemize}
+\vspace{0.15cm}
+\item \textbf{Web Server 2}: Implementing our \textbf{own handler}
+  \begin{itemize}
+  \item Create a class derived from \pythoninline{BaseHTTPRequestHandler}
+  \item Override the \pythoninline{do_GET()} method
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{What We Learned in Session 14 (2/2)}
+
+\textbf{Generating HTTP responses} with the handler:
+
+\vspace{0.1cm}
+
+\begin{python}
+class TestHandler(http.server.BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        contents = "I am the happy server! :-)"
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain')
+        self.send_header('Content-Length',
+                         len(contents.encode()))
+        self.end_headers()
+        self.wfile.write(contents.encode())
+\end{python}
+
+\vspace{0.2cm}
+
+\textbf{Key properties}: \pythoninline{self.requestline}, \pythoninline{self.command}, \pythoninline{self.path}
+
+\vspace{0.1cm}
+
+\textbf{Debugging}: Browser developer tools (Network tab)
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 2: Session 15 -- Practice 5
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Session 15: Practice 5 -- BASES2 Web Server}
+
+\begin{frame}
+\frametitle{Session 15 Goals}
+
+\textbf{In this session we will}:
+
+\begin{itemize}
+\item Reimplement the \textbf{BASES web server} from P04 using the \textbf{HTTP Python module}
+\item Use our \textbf{own handler} instead of raw sockets
+\item Serve the same DNA base pages: \textbf{A}, \textbf{C}, \textbf{G}, \textbf{T}
+\item Handle \textbf{any filename} as an HTML resource
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Time}: 2 hours
+
+\vspace{0.2cm}
+
+\textbf{Folder}: \texttt{P05/} with subfolder \texttt{html/info/}
+
+\vspace{0.2cm}
+
+\textbf{Important}: Finish all S14 exercises before starting!
+
+\end{frame}
+
+\begin{frame}
+\frametitle{From P04 to P05: What Changes?}
+
+\textbf{P04} (raw sockets) $\rightarrow$ \textbf{P05} (HTTP module):
+
+\vspace{0.3cm}
+
+\begin{columns}
+\begin{column}{0.45\textwidth}
+\textbf{P04 -- Raw sockets}:
+\begin{itemize}
+\item Manual socket creation
+\item Parse raw HTTP request
+\item Build response string manually (status line, headers, body)
+\item \pythoninline{cs.send(response.encode())}
+\end{itemize}
+\end{column}
+\begin{column}{0.45\textwidth}
+\textbf{P05 -- HTTP module}:
+\begin{itemize}
+\item \pythoninline{socketserver.TCPServer}
+\item \pythoninline{self.path} gives the resource
+\item \pythoninline{self.send_response()}
+\item \pythoninline{self.send_header()}
+\item \pythoninline{self.wfile.write()}
+\end{itemize}
+\end{column}
+\end{columns}
+
+\vspace{0.4cm}
+
+The \textbf{logic is the same}, but the HTTP module handles the protocol details for us.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{BASES2 Server: Resource Table}
+
+The server must handle the \textbf{same resources} as P04:
+
+\vspace{0.2cm}
+
+\begingroup\small
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Resource (path)} & \textbf{HTML File} & \textbf{Color} \\
+\hline
+\texttt{/info/A.html} & \texttt{html/info/A.html} & lightgreen \\
+\hline
+\texttt{/info/C.html} & \texttt{html/info/C.html} & yellow \\
+\hline
+\texttt{/info/G.html} & \texttt{html/info/G.html} & lightblue \\
+\hline
+\texttt{/info/T.html} & \texttt{html/info/T.html} & pink \\
+\hline
+\texttt{/} or \texttt{/index.html} & \texttt{html/index.html} & white \\
+\hline
+any other & \texttt{html/error.html} & red \\
+\hline
+\end{tabular}
+\end{center}
+\endgroup
+
+\vspace{0.2cm}
+
+\textbf{Key difference with P04}: Resources now use \texttt{.html} extension (e.g., \texttt{/info/A.html} instead of \texttt{/info/A}).
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Server Structure with HTTP Module}
+
+\textbf{Server filename}: \texttt{P05/bases2-webserver.py}
+
+\vspace{0.1cm}
+
+\begin{python}
+import http.server
+import socketserver
+from pathlib import Path
+
+PORT = 8080
+socketserver.TCPServer.allow_reuse_address = True
+
+class Bases2Handler(
+        http.server.BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        # 1. Read self.path
+        # 2. Open the corresponding HTML file
+        # 3. Send response with send_response(),
+        #    send_header(), end_headers()
+        # 4. Write body with self.wfile.write()
+        pass
+
+Handler = Bases2Handler
+with socketserver.TCPServer(("", PORT), Handler) \
+        as httpd:
+    httpd.serve_forever()
+\end{python}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Handling the Path and Serving Files}
+
+Use \pythoninline{self.path} to determine which file to serve:
+
+\vspace{0.1cm}
+
+\begin{python}
+def do_GET(self):
+    # 1. Map "/" to "/index.html"
+    #    Otherwise build path: "html" + self.path
+
+    # 2. Try to open the file (Path.read_text())
+    #    If FileNotFoundError: use error.html
+
+    # 3. Send response (status, headers, body)
+\end{python}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{HTML Files: Reusing from P04}
+
+Reuse the HTML files from P04 with \textbf{small modifications}:
+
+\vspace{0.2cm}
+
+\begin{itemize}
+\item \texttt{P05/html/index.html} -- Main page (white background)
+  \begin{itemize}
+  \item Links to \texttt{/info/A.html}, \texttt{/info/C.html}, \texttt{/info/G.html}, \texttt{/info/T.html}
+  \end{itemize}
+\vspace{0.15cm}
+\item \texttt{P05/html/info/A.html} -- Adenine (lightgreen)
+\item \texttt{P05/html/info/C.html} -- Cytosine (yellow)
+\item \texttt{P05/html/info/G.html} -- Guanine (lightblue)
+\item \texttt{P05/html/info/T.html} -- Thymine (pink)
+\vspace{0.15cm}
+\item \texttt{P05/html/error.html} -- Error page (red background)
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Pay attention}: The info pages are now inside \texttt{html/info/}, so links between pages may need adjusting.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Testing the Server}
+
+\textbf{Steps to test}:
+
+\begin{enumerate}
+\item Run: \texttt{python P05/bases2-webserver.py}
+\item Open browser: \texttt{http://localhost:8080}
+\item Verify the \textbf{main page} appears (index.html)
+\item Click on each base link (A, C, G, T)
+\item Try a non-existing URL (e.g., \texttt{/doesnotexist})
+  \begin{itemize}
+  \item The \textbf{error page} should appear
+  \end{itemize}
+\item Use \textbf{developer tools} (Network tab) to inspect requests
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\textbf{Remember}: If you see cached content, press \textbf{F5} or \textbf{Ctrl+Shift+R} to force a reload.
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Deliverables}
+
+\textbf{P05 folder should contain}:
+
+\vspace{0.2cm}
+
+\begingroup\small
+\begin{itemize}
+\item \texttt{bases2-webserver.py} -- The web server using the HTTP module
+\item \texttt{html/index.html} -- Main page
+\item \texttt{html/error.html} -- Error page
+\item \texttt{html/info/A.html} -- Adenine page
+\item \texttt{html/info/C.html} -- Cytosine page
+\item \texttt{html/info/G.html} -- Guanine page
+\item \texttt{html/info/T.html} -- Thymine page
+\end{itemize}
+\endgroup
+
+\vspace{0.3cm}
+
+\textbf{Remember}: Push everything to your remote Github repository!
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SECTION 3: End
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+\begin{center}
+\Huge{Questions?}
+
+\vspace{1cm}
+
+\Large{Time to code!}
+\end{center}
+\end{frame}
+
+\end{document}
