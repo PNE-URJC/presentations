@@ -320,21 +320,27 @@ MIR633 & ANK2 \\
 
 \textbf{Goal}: check whether the Ensembl service is \textbf{alive} using the \texttt{info/ping} endpoint.
 
-\vspace{0.3cm}
+\vspace{0.2cm}
 
 \textbf{Endpoint URL}:
 \begin{center}
 \small\texttt{https://rest.ensembl.org/info/ping?content-type=application/json}
 \end{center}
 
-\vspace{0.3cm}
+\vspace{0.1cm}
 
-The URL has three parts:
-\begin{itemize}
-\item \textbf{Server}: \texttt{rest.ensembl.org}
-\item \textbf{Endpoint}: \texttt{/info/ping}
-\item \textbf{Parameters}: \texttt{content-type=application/json}
-\end{itemize}
+\begin{columns}[c]
+\column{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{ping-json-browser.png}
+\column{0.5\textwidth}
+\centering
+\includegraphics[width=\textwidth]{ping-raw-browser.png}
+\end{columns}
+
+\vspace{0.1cm}
+
+The URL has \textbf{three parts}: \texttt{rest.ensembl.org} (server) + \texttt{/info/ping} (endpoint) + \texttt{content-type=application/json} (parameters)
 
 \end{frame}
 
