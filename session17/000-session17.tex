@@ -213,17 +213,17 @@ arguments = parse_qs(url_path.query)
 
 \begingroup\small
 \begin{center}
-\begin{tabular}{|l|l|l|p{3cm}|}
+\begin{tabular}{|l|l|l|l|p{2.5cm}|}
 \hline
-\textbf{Service} & \textbf{Action} & \textbf{Argument} & \textbf{Description} \\
+\textbf{Service} & \textbf{Action} & \textbf{Path} & \textbf{Argument} & \textbf{Description} \\
 \hline
-PING & \texttt{ping} & none & Test if server is alive \\
+PING & \texttt{ping} & \texttt{/ping} & none & Test if server is alive \\
 \hline
-GET & \texttt{get} & \texttt{n}: 0--4 & Get sequence number n \\
+GET & \texttt{get} & \texttt{/get} & \texttt{n}: 0--4 & Get sequence number n \\
 \hline
-GENE & \texttt{gene} & \texttt{name} & Get complete gene sequence \\
+GENE & \texttt{gene} & \texttt{/gene} & \texttt{name} & Get complete gene sequence \\
 \hline
-OPERATION & \texttt{operation} & \texttt{seq}, \texttt{op} & Perform operation on sequence \\
+OPERATION & \texttt{operation} & \texttt{/operation} & \texttt{seq}, \texttt{op} & Perform operation on sequence \\
 \hline
 \end{tabular}
 \end{center}
